@@ -1,0 +1,20 @@
+<blocks>
+<block name="Block 1" priority="1">
+	<content>
+		<rule>random</rule>
+		<file path="/TV/Arrow/" />
+	</content>
+	<content>
+		<rule>first</rule>
+		<rule>random</rule>
+		<file path="/TV/Flash/" />
+	</content>
+</block>
+<block name="Block 2" priority="2">
+	<content>
+		<rule>first</rule>
+		<file path="/TV/Game of Thrones/" />
+		<file path="/TV/Futurama/" />
+	</content>
+</block>
+</blocks>
