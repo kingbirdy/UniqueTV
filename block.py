@@ -40,7 +40,7 @@ def parseBlocks(file):
             xmlrules = xmlc.getElementsByTagName("rule")
             rules = []
             for xr in xmlrules:
-                rules.append(xr)
+                rules.append(xr.firstChild.data)
             #parse files into an array
             xmlfiles = xmlc.getElementsByTagName("file")
             files = []

@@ -2,7 +2,7 @@
 <block name="Block 1" priority="1">
 	<content>
 		<rule>random</rule>
-		<file path="/TV/Arrow/" />
+		<file path="test/TV/Arrow/" />
 	</content>
 	<content>
 		<rule>first</rule>
