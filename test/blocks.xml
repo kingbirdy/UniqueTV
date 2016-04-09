@@ -10,11 +10,34 @@
 		<file path="/TV/Flash/" />
 	</content>
 </block>
+
+<block>
 <block name="Block 2" priority="2">
 	<content>
 		<rule>first</rule>
 		<file path="/TV/Game of Thrones/" />
 		<file path="/TV/Futurama/" />
 	</content>
+</block>
+
+<block>
+<block name ="Block 3” priority ="3">
+	<content>
+		<rule>sequential</rule>
+	</content>
+</block>
+
+<block>
+<block name="Block 4" priority ="4">
+	<content>
+		<rule>genre</rule>
+	</content>	
+</block>
+
+<block>
+<block name="Block 5" priority ="5">
+	<content>
+		<rule>director</rule>
+	</content>	
 </block>
 </blocks>
