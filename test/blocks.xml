@@ -1,43 +1,18 @@
 <blocks>
-<block name="Block 1" priority="1">
-	<content>
-		<rule>random</rule>
-		<file path="test/TV/Arrow/" />
-	</content>
-	<content>
-		<rule>first</rule>
-		<rule>random</rule>
-		<file path="/TV/Flash/" />
+<block name="DC" priority="5" starttime="U1200" endtime="W1730">
+	<content order="random" >
+		<file path="test/videos/" />
 	</content>
 </block>
-
-<block>
-<block name="Block 2" priority="2">
-	<content>
-		<rule>first</rule>
-		<file path="/TV/Game of Thrones/" />
-		<file path="/TV/Futurama/" />
+<block name="Movies" priority="3" starttime="M1700" endtime="M2300">
+	<content order="random">
+		<file path="Movies/" maxduration="120" />
 	</content>
 </block>
-
-<block>
-<block name ="Block 3” priority ="3">
+<block name="Background">
 	<content>
-		<rule>sequential</rule>
+		<file path="Movies/" genre="Comedy" />
+		<file path="TV/" minduration="45" />
 	</content>
-</block>
-
-<block>
-<block name="Block 4" priority ="4">
-	<content>
-		<rule>genre</rule>
-	</content>	
-</block>
-
-<block>
-<block name="Block 5" priority ="5">
-	<content>
-		<rule>director</rule>
-	</content>	
 </block>
 </blocks>
