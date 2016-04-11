@@ -1,12 +1,12 @@
 <blocks>
 <block name="test" priority="5" starttime="U1200" endtime="W1730">
 	<content order="sequential" >
-		<file path="test/videos/" />
+		<file path="test/videos/" maxduration="15"/>
 	</content>
 </block>
-<block name="Movies" priority="3" starttime="M1700" endtime="M2300">
+<block name="DC" priority="7" starttime="M1400" endtime="M2300">
 	<content order="random">
-		<file path="Movies/" maxduration="120" />
+		<file path="../../Videos/" maxduration="120" />
 	</content>
 </block>
 <block name="Background">

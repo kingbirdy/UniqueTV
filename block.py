@@ -2,6 +2,7 @@ import xml.dom.minidom
 import datetime
 import os
 import random
+import lib.vlc as vlc
 
 dayMap = {'U':0,"M":1,"T":2,"W":3,"R":4,"F":5,"S":6}
 
@@ -10,17 +11,12 @@ collection = DOMTree.documentElement
 blocks = collection.getElementsByTagName("block")
 
 class block:
-    name = ""
-    priority = ""
-    contents = []
-    start = datetime.timedelta()
-    end = datetime.timedelta()
-    def __init__(self, name, priority, contents, start, end):
-        self.name=  name
-        self.priority = priority
-        self.contents = contents
-        self.start = start
-        self.end = end
+    def __init__(self):
+        self.name = ""
+        self.priority = 0
+        self.contents = []
+        self.start = datetime.timedelta()
+        self.end = datetime.timedelta()
 
     #returns a file path to be played, chosen from a random content
     def getFile(self):
@@ -30,20 +26,29 @@ class block:
 class content:
     global orders
     orders = {"random":0, "r":0, "sequential":1, "s":1}
-    order = 0
-    paths = []
-    files = []
-    played = []
-    def __init__(self, order, paths):
+    def __init__(self, order, pathfiles):
+        self.pathfiles = []
+        self.files = []
+        self.played = []
         self.order = orders[order]
-        self.paths = paths
-        for path in self.paths:
-            self.buildFiles(path)
+        self.pathfiles = pathfiles
+        for tvf in self.pathfiles:
+            self.buildFiles(tvf)
 
-    def buildFiles(self, path):
-        for root, dirs, files in os.walk(path):
+    def buildFiles(self, tvf):
+        i = vlc.Instance()
+        for root, dirs, files in os.walk(tvf.path):
+            files = [ fi for fi in files if fi.endswith(('.mkv', '.mp4')) ]
             for file in files:
-                self.files.append(os.path.join(root, file))
+                f = os.path.join(root, file)
+                m = i.media_new(f)
+                m.parse()
+                duration = m.get_duration() / 1000
+                #print "Duration %s" % duration
+                if ((tvf.maxduration is not 0) and duration <= tvf.maxduration):
+                    #print "Max %s" % tvf.maxduration
+                    self.files.append(f)
+        i.release()
 
     def addPlayed(self, file):
         self.played.append(file)
@@ -64,10 +69,14 @@ class content:
             return self.files[len(self.played)]
         return None
 
-class file:
-    path = ""
-    def __init__(self, path, genre="", minduration="0", maxduration="0"):
-        self.path = path
+class tvfile:
+    def __init__(self):
+        self.path = ""
+        self.minduration = 0
+        self.maxduration = 0
+
+    def __str__(self):
+        return self.path
 
 def parseBlocks(file):
     DOMTree = xml.dom.minidom.parse(file)
@@ -76,13 +85,15 @@ def parseBlocks(file):
     blocks = []
 
     for xmlblock in xmlblocks:
-        #block defaults
-        name, priority, start, end = "Block",0,"U0000","S2359"
-        #change defaults, if values exist
+        #create block, set name and priority
+        b = block()
         if xmlblock.hasAttribute("name"):
-            name = xmlblock.getAttribute("name")
+            b.name = xmlblock.getAttribute("name")
         if xmlblock.hasAttribute("priority"):
-            priority = xmlblock.getAttribute("priority")
+            b.priority = int(xmlblock.getAttribute("priority"))
+
+        #set default start and end times, then get value if it exists
+        start, end = "U0000","S2359"
         if xmlblock.hasAttribute("starttime"):
             start = xmlblock.getAttribute("starttime")
         if xmlblock.hasAttribute("endtime"):
@@ -93,23 +104,29 @@ def parseBlocks(file):
         starttime = int(start[1:])
         endday = dayMap[end[0]]
         endtime = int(end[1:])
-        start = datetime.timedelta(days=startday, hours=starttime/100, minutes=starttime%100)
-        end = datetime.timedelta(days=endday, hours=endtime/100, minutes=endtime%100)
+        b.start = datetime.timedelta(days=startday, hours=starttime/100, minutes=starttime%100)
+        b.end = datetime.timedelta(days=endday, hours=endtime/100, minutes=endtime%100)
 
+        #load contents
         xmlcontents = xmlblock.getElementsByTagName("content")
         contents = []
         for xmlc in xmlcontents:
-            order = "random"
-            if xmlc.hasAttribute("order"):
-                order = xmlc.getAttribute("order")
+            order = (xmlc.getAttribute("order") if xmlc.hasAttribute("order") else "random")
             #parse files into an array
             xmlfiles = xmlc.getElementsByTagName("file")
             files = []
             for xf in xmlfiles:
-                files.append(xf.getAttribute("path"))
-            #add a new content to the contents array with previously parsed rules and files
+                f = tvfile()
+                f.path = xf.getAttribute("path")
+                if xf.hasAttribute("minduration"):
+                    f.minduration = xf.getAttribute("minduration")
+                if xf.hasAttribute("maxduration"):
+                    f.maxduration = xf.getAttribute("maxduration")
+                files.append(f)
+            #add a new content to the contents array with order and files
             contents.append(content(order, files))
-        blocks.append(block(name, priority, contents, start, end))
+        b.contents = contents
+        blocks.append(b)
 
     return blocks
 
@@ -124,9 +141,7 @@ def getActiveBlock(blocks):
     currenttime = datetime.datetime.today().hour * 3600 + datetime.datetime.today().minute * 60
     activeblock = None
     for block in blocks:
-        if (block.start.days <= currentday <= block.end.days and (currenttime >= block.start.seconds if currentday == block.start.days else True) and ((currenttime <= block.end.seconds if currentday == block.end.days else True))):
-            if currentday == block.end.days and currenttime > block.end.time:
-                continue
+        if block.start.days <= currentday <= block.end.days:
             if activeblock is None or activeblock.priority < block.priority:
                 activeblock = block
     return activeblock

@@ -24,10 +24,10 @@ blocks = block.parseBlocks("test/blocks.xml")
 instance = vlc.Instance()
 player = instance.media_player_new()
 
-block = block.getActiveBlock(blocks)
-
+b = block.getActiveBlock(blocks)
 while True:
-    file = block.getFile()
+    file = b.getFile()
     print "Playing %s " % file
-    block.contents[0].addPlayed(file)
-    playMedia(file)
+    b.contents[0].addPlayed(file)
+    time.sleep(4)
+    #playMedia(file)
