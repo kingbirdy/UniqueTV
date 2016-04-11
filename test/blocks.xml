@@ -1,6 +1,6 @@
 <blocks>
 <block name="DC" priority="5" starttime="U1200" endtime="W1730">
-	<content order="random" >
+	<content order="sequential" >
 		<file path="test/videos/" />
 	</content>
 </block>

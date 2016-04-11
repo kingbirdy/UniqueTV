@@ -25,7 +25,9 @@ instance = vlc.Instance()
 player = instance.media_player_new()
 
 block = block.getActiveBlock(blocks)
-file = block.getFile()
 
 while True:
+    file = block.getFile()
+    print file
+    block.contents[0].addPlayed(file)
     playMedia(file)

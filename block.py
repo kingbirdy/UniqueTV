@@ -40,20 +40,28 @@ class content:
     def addPlayed(self, file):
         self.played.append(file)
 
-    def getFile(self):
+    def getFile(self, recursion=0):
         if self.order is orders["random"]:
             randPathI = random.randint(0, self.paths.__len__() - 1)
             path = self.paths[randPathI]
             randFileI = random.randint(0, os.listdir(path).__len__() - 1)
             file = os.listdir(path)[randFileI]
             filepath = os.path.join(path, file)
+            if (filepath in self.played):
+                #if every file has been played, reset played and return a random file
+                if (recursion > 50):
+                    self.played=[]
+                    return self.getFile()
+                return self.getFile(recursion=recursion+1)
             return filepath
         elif (self.order is orders["sequential"]):
             for path in self.paths:
                 files = os.listdir(path)
                 for file in files:
-                    if file not in self.played:
+                    if os.path.join(path,file) not in self.played:
                         return os.path.join(path, file)
+            self.played = []
+            return os.path.join(self.paths[0], os.listdir(self.paths[0])[0])
         return None
 
 class file:
