@@ -28,6 +28,6 @@ block = block.getActiveBlock(blocks)
 
 while True:
     file = block.getFile()
-    print file
+    print "Playing %s " % file
     block.contents[0].addPlayed(file)
     playMedia(file)

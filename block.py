@@ -32,21 +32,25 @@ class content:
     orders = {"random":0, "r":0, "sequential":1, "s":1}
     order = 0
     paths = []
+    files = []
     played = []
     def __init__(self, order, paths):
         self.order = orders[order]
         self.paths = paths
+        for path in self.paths:
+            self.buildFiles(path)
+
+    def buildFiles(self, path):
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                self.files.append(os.path.join(root, file))
 
     def addPlayed(self, file):
         self.played.append(file)
 
     def getFile(self, recursion=0):
         if self.order is orders["random"]:
-            randPathI = random.randint(0, self.paths.__len__() - 1)
-            path = self.paths[randPathI]
-            randFileI = random.randint(0, os.listdir(path).__len__() - 1)
-            file = os.listdir(path)[randFileI]
-            filepath = os.path.join(path, file)
+            filepath = self.files[random.randint(0, len(self.files)-1)]
             if (filepath in self.played):
                 #if every file has been played, reset played and return a random file
                 if (recursion > 50):
@@ -55,13 +59,9 @@ class content:
                 return self.getFile(recursion=recursion+1)
             return filepath
         elif (self.order is orders["sequential"]):
-            for path in self.paths:
-                files = os.listdir(path)
-                for file in files:
-                    if os.path.join(path,file) not in self.played:
-                        return os.path.join(path, file)
-            self.played = []
-            return os.path.join(self.paths[0], os.listdir(self.paths[0])[0])
+            if len(self.played) is len(self.files):
+                self.played = []
+            return self.files[len(self.played)]
         return None
 
 class file:
@@ -124,7 +124,7 @@ def getActiveBlock(blocks):
     currenttime = datetime.datetime.today().hour * 3600 + datetime.datetime.today().minute * 60
     activeblock = None
     for block in blocks:
-        if (block.start.days <= currentday and block.start.seconds <= currenttime and block.end.days >= currentday):
+        if (block.start.days <= currentday <= block.end.days and (currenttime >= block.start.seconds if currentday == block.start.days else True) and ((currenttime <= block.end.seconds if currentday == block.end.days else True))):
             if currentday == block.end.days and currenttime > block.end.time:
                 continue
             if activeblock is None or activeblock.priority < block.priority:
