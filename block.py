@@ -23,6 +23,11 @@ class block:
         rand = random.randint(0, self.contents.__len__() - 1)
         return self.contents[rand].getFile()
 
+    def addPlayed(self, file):
+        for c in self.contents:
+            if file in c.files:
+                c.played.append(file)
+
 class content:
     global orders
     orders = {"random":0, "r":0, "sequential":1, "s":1}

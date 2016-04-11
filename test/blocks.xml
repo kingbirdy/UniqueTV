@@ -6,7 +6,10 @@
 </block>
 <block name="DC" priority="7" starttime="M1400" endtime="M2300">
 	<content order="random">
-		<file path="../../Videos/" minduration="120" />
+		<file path="../../Videos/Rick and Morty Season 1 [1080p] [HEVC]/" minduration="120" />
+	</content>
+	<content order="sequential">
+		<file path="../../Videos/Arrow/" minduration="120" />
 	</content>
 </block>
 <block name="Background">
