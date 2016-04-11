@@ -43,10 +43,9 @@ class content:
                 f = os.path.join(root, file)
                 m = i.media_new(f)
                 m.parse()
-                duration = m.get_duration() / 1000
-                #print "Duration %s" % duration
-                if ((tvf.maxduration is not 0) and duration <= tvf.maxduration):
-                    #print "Max %s" % tvf.maxduration
+                duration = m.get_duration() / 1000 #convert from ms to seconds
+                #check if file is within duration bounds
+                if (tvf.maxduration is 0 or duration <= tvf.maxduration) and (tvf.minduration is 0 or duration >= tvf.minduration):
                     self.files.append(f)
         i.release()
 
@@ -119,9 +118,9 @@ def parseBlocks(file):
                 f = tvfile()
                 f.path = xf.getAttribute("path")
                 if xf.hasAttribute("minduration"):
-                    f.minduration = xf.getAttribute("minduration")
+                    f.minduration = int(xf.getAttribute("minduration"))
                 if xf.hasAttribute("maxduration"):
-                    f.maxduration = xf.getAttribute("maxduration")
+                    f.maxduration = int(xf.getAttribute("maxduration"))
                 files.append(f)
             #add a new content to the contents array with order and files
             contents.append(content(order, files))
