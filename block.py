@@ -140,7 +140,7 @@ def getActiveBlock(blocks):
     currenttime = datetime.datetime.today().hour * 3600 + datetime.datetime.today().minute * 60
     activeblock = None
     for block in blocks:
-        if block.start.days <= currentday <= block.end.days:
+        if block.start.days < currentday < block.end.days or (currentday is block.start.days and currenttime >= block.start.seconds) or (currentday is block.end.days and currenttime <= block.end.seconds):
             if activeblock is None or activeblock.priority < block.priority:
                 activeblock = block
     return activeblock

@@ -4,9 +4,9 @@
 		<file path="test/videos/" maxduration="15"/>
 	</content>
 </block>
-<block name="DC" priority="3" starttime="M1400" endtime="M2300">
+<block name="DC" priority="7" starttime="M1400" endtime="M2300">
 	<content order="random">
-		<file path="Videos/" maxduration="120" />
+		<file path="../../Videos/" minduration="120" />
 	</content>
 </block>
 <block name="Background">
